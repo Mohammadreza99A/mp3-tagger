@@ -78,6 +78,7 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
+    title: 'mp3-tagger',
     backgroundColor: '#2E3440',
     icon: getAssetPath('icon.png'),
     webPreferences: {
@@ -87,8 +88,6 @@ const createWindow = async () => {
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
-  // @TODO: Use 'ready-to-show' event
-  //        https://github.com/electron/electron/blob/main/docs/api/browser-window.md#using-ready-to-show-event
   mainWindow.webContents.on('did-finish-load', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
