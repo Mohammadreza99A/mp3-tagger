@@ -2,7 +2,9 @@ import React from 'react';
 
 // Material components
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+
+// Components
+import UploadFile from '../../components/UploadFile';
 
 export default function Home() {
   return (
@@ -13,9 +15,7 @@ export default function Home() {
       alignItems="center"
       justifyContent="center"
     >
-      <Typography variant="h2" component="h3">
-        Home
-      </Typography>
+      <UploadFile />
     </Grid>
   );
 }

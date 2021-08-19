@@ -14,6 +14,7 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import NodeID3 from 'node-id3';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -27,10 +28,9 @@ export default class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
+ipcMain.handle('uploadMP3File', async (_, filename: string) => {
+  const tags = await NodeID3.read(filename);
+  return tags;
 });
 
 if (process.env.NODE_ENV === 'production') {

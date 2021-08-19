@@ -5,6 +5,8 @@ import { MetadataContextState } from '../types/metadataContextState';
 const defaultMetadataContext: MetadataContextState = {
   filePath: '',
   metadata: {},
+  updateMetadata: () => {},
+  fetchMetadata: () => {},
 };
 
 export const MetadataContext = createContext<MetadataContextState>(
@@ -12,11 +14,34 @@ export const MetadataContext = createContext<MetadataContextState>(
 );
 
 const MetadataProvider: FC = ({ children }: ReactNode) => {
-  const [filePath] = useState<string>(defaultMetadataContext.filePath);
-  const [metadata] = useState<NodeID3.Tags>(defaultMetadataContext.metadata);
+  const [filePath, setFilePath] = useState<string>(
+    defaultMetadataContext.filePath
+  );
+  const [metadata, setMetadata] = useState<NodeID3.Tags>(
+    defaultMetadataContext.metadata
+  );
+
+  const updateMetadata = (updatedMetadata: NodeID3.Tags): void => {
+    setMetadata(updatedMetadata);
+  };
+
+  const fetchMetadata = async (filepath: string): Promise<void> => {
+    const mp3Metadata: NodeID3.Tags =
+      await window.electron.ipcRenderer.uploadMP3File(filepath);
+
+    setFilePath(filepath);
+    updateMetadata(mp3Metadata);
+  };
 
   return (
-    <MetadataContext.Provider value={{ filePath, metadata }}>
+    <MetadataContext.Provider
+      value={{
+        filePath,
+        metadata,
+        fetchMetadata,
+        updateMetadata,
+      }}
+    >
       {children}
     </MetadataContext.Provider>
   );
