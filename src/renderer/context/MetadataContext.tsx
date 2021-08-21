@@ -7,6 +7,8 @@ const defaultMetadataContext: MetadataContextState = {
   metadata: {},
   updateMetadata: () => {},
   fetchMetadata: () => {},
+  saveMetadata: () => {},
+  updateCoverImage: () => {},
 };
 
 export const MetadataContext = createContext<MetadataContextState>(
@@ -33,6 +35,28 @@ const MetadataProvider: FC = ({ children }: ReactNode) => {
     updateMetadata(mp3Metadata);
   };
 
+  const saveMetadata = async (): Promise<void> => {
+    if (metadata) {
+      await window.electron.ipcRenderer.updateMP3Tags(filePath, metadata);
+      fetchMetadata(filePath);
+    }
+  };
+
+  const updateCoverImage = async (imageFilePath: string): void => {
+    if (metadata.image && typeof metadata.image !== 'string') {
+      const uploadedCoverBuffer: Buffer =
+        await window.electron.ipcRenderer.uploadMP3CoverPhoto(imageFilePath);
+      const updatedMetadata: NodeID3.Tags = {
+        ...metadata,
+        image: {
+          ...metadata.image,
+          imageBuffer: uploadedCoverBuffer,
+        },
+      };
+      updateMetadata(updatedMetadata);
+    }
+  };
+
   return (
     <MetadataContext.Provider
       value={{
@@ -40,6 +64,8 @@ const MetadataProvider: FC = ({ children }: ReactNode) => {
         metadata,
         fetchMetadata,
         updateMetadata,
+        saveMetadata,
+        updateCoverImage,
       }}
     >
       {children}

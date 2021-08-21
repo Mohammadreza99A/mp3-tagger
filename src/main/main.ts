@@ -11,6 +11,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
+import fs from 'fs';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
@@ -31,6 +32,25 @@ let mainWindow: BrowserWindow | null = null;
 ipcMain.handle('uploadMP3File', async (_, filename: string) => {
   const tags = await NodeID3.read(filename);
   return tags;
+});
+
+ipcMain.handle(
+  'updateMP3Tags',
+  async (_, filePath: string, tags: NodeID3.Tags) => {
+    // Convert Uint8Array to Buffer
+    if (tags.image && typeof tags.image !== 'string') {
+      const buff: Buffer = Buffer.from(tags.image.imageBuffer);
+      tags.image.imageBuffer = buff;
+    }
+
+    await NodeID3.update(tags, filePath);
+  }
+);
+
+ipcMain.handle('uploadMP3CoverPhoto', async (_, filePath: string) => {
+  // Upload the image and convert it to a buffer
+  const coverPhotoFile: Buffer = fs.readFileSync(filePath);
+  return Buffer.from(coverPhotoFile);
 });
 
 if (process.env.NODE_ENV === 'production') {

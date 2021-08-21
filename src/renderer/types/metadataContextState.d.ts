@@ -5,4 +5,6 @@ export type MetadataContextState = {
   metadata: NodeID3.Tags;
   updateMetadata: (updatedMetadata: NodeID3.Tags) => void;
   fetchMetadata: (filePath: string) => Promise<void>;
+  saveMetadata: () => Promise<void>;
+  updateCoverImage: (imageFilePath: string) => void;
 };

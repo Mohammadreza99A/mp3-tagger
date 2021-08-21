@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+
+// Material components
+import Button from '@material-ui/core/Button';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import Id3Image from '../../../types/id3Image';
+import MetadataContextState from '../../../types/metadataContextState.d';
+import { MetadataContext } from '../../../context/MetadataContext';
 
 import useStyles from './styles';
 
 export default function CoverImage({ image }: { image: Id3Image }) {
+  const { updateCoverImage } =
+    useContext<MetadataContextState>(MetadataContext);
+
   const [base64Cover, setBase64Cover] = useState<string | null>(null);
 
   const classes = useStyles();
@@ -16,6 +25,14 @@ export default function CoverImage({ image }: { image: Id3Image }) {
         ''
       )
     );
+  };
+
+  const handleCoverPhotoUpload = async (
+    e: React.FormEvent<HTMLInputElement>
+  ) => {
+    if (e.currentTarget.files && e.currentTarget.files?.length >= 1) {
+      updateCoverImage(e.currentTarget.files[0].path);
+    }
   };
 
   useEffect(() => {
@@ -30,6 +47,28 @@ export default function CoverImage({ image }: { image: Id3Image }) {
         alt=""
         className={classes.coverImage}
       />
+      <input
+        color="primary"
+        type="file"
+        accept="image/*"
+        onChange={handleCoverPhotoUpload}
+        id="song-cover-upload-button"
+        className={classes.fileInput}
+      />
+      {/*  eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+      <label htmlFor="song-cover-upload-button" className={classes.fileLabel}>
+        <Button
+          variant="outlined"
+          component="span"
+          size="large"
+          color="secondary"
+          className={classes.button}
+          startIcon={<CloudUploadIcon />}
+          fullWidth
+        >
+          Upload song cover
+        </Button>
+      </label>
     </div>
   );
 }

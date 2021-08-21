@@ -24,6 +24,7 @@ export default function UploadFile() {
       <input
         color="primary"
         type="file"
+        accept=".mp3,audio/*"
         onChange={handleUploadFile}
         id="upload-mp3-file-button"
         className={classes.fileInput}
