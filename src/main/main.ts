@@ -15,6 +15,7 @@ import fs from 'fs';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import axios from 'axios';
 import NodeID3 from 'node-id3';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -51,6 +52,14 @@ ipcMain.handle('uploadMP3CoverPhoto', async (_, filePath: string) => {
   // Upload the image and convert it to a buffer
   const coverPhotoFile: Buffer = fs.readFileSync(filePath);
   return Buffer.from(coverPhotoFile);
+});
+
+ipcMain.handle('searchMetadata', async (_, query: string) => {
+  const optionalMetadata = axios
+    .get(`https://api.deezer.com/search?q=${query}`)
+    .then((res) => res.data)
+    .catch((err) => console.log(err));
+  return optionalMetadata;
 });
 
 if (process.env.NODE_ENV === 'production') {

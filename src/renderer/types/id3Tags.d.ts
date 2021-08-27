@@ -1,3 +1,5 @@
+import Id3Image from './id3Image';
+
 type Id3Tags = {
   artist?: string;
   title?: string;
@@ -5,6 +7,7 @@ type Id3Tags = {
   genre?: string;
   year?: string;
   trackNumber?: string;
+  image?: Id3Image;
   [key: string]: unknown;
 };
 

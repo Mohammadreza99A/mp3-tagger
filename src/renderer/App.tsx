@@ -9,17 +9,20 @@ import globalTheme from './styles/globalStyle';
 import Home from './pages/home';
 
 import MetadataProvider from './context/MetadataContext';
+import SearchMetadataProvider from './context/SearchMetadataContext';
 
 export default function App() {
   return (
     <MetadataProvider>
-      <ThemeProvider theme={globalTheme}>
-        <Router>
-          <Switch>
-            <Route path="/" exact component={Home} />
-          </Switch>
-        </Router>
-      </ThemeProvider>
+      <SearchMetadataProvider>
+        <ThemeProvider theme={globalTheme}>
+          <Router>
+            <Switch>
+              <Route path="/" exact component={Home} />
+            </Switch>
+          </Router>
+        </ThemeProvider>
+      </SearchMetadataProvider>
     </MetadataProvider>
   );
 }

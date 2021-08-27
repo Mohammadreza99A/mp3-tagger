@@ -18,5 +18,10 @@ contextBridge.exposeInMainWorld('electron', {
       );
       return coverPhotoBuffer;
     },
+
+    async searchMetadata(query) {
+      const res = await ipcRenderer.invoke('searchMetadata', query);
+      return res;
+    },
   },
 });
