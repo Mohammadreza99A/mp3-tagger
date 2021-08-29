@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 
-import SearchMetadata from '../../components/SearchMetadata';
+import SearchMetadataInput from '../../components/SearchMetadata/SearchMetadataInput';
 import SearchResultsList from '../../components/SearchMetadata/SearchResultsList';
 
 import useStyles from './styles';
@@ -40,7 +40,7 @@ export default function SearchMetadataResultsPage() {
       >
         Go Back
       </Button>
-      <SearchMetadata />
+      <SearchMetadataInput />
       <SearchResultsList />
     </Grid>
   );

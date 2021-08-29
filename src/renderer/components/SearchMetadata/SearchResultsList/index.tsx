@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import axios from 'axios';
+
 // Material components
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -27,8 +29,20 @@ export default function SearchResultsList() {
   const { foundMetadata } = useContext(SearchMetadataContext);
   const { updateMetadata } = useContext(MetadataContext);
 
-  const saveOnlineMetadata = (metadata: Id3Tags) => {
-    // TODO download the cover image and convert it to buffer
+  const saveOnlineMetadata = async (metadata: Id3Tags) => {
+    if (metadata.image && typeof metadata.image === 'string') {
+      try {
+        const imageBuff = await axios.get(metadata.image, {
+          responseType: 'arraybuffer',
+        });
+        metadata.image = {
+          imageBuffer: imageBuff.data,
+        };
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     updateMetadata(metadata);
     history.goBack();
   };
@@ -73,7 +87,7 @@ export default function SearchResultsList() {
                     onClick={() => saveOnlineMetadata(foundMetadata[key])}
                     startIcon={<SaveIcon />}
                   >
-                    Apply Tags
+                    Apply
                   </Button>
                 </ListItemSecondaryAction>
               </ListItem>

@@ -11,7 +11,7 @@ import { MetadataContext } from '../../context/MetadataContext';
 // Components
 import UploadFile from '../../components/UploadFile';
 import MetadataTable from '../../components/MetadataTable';
-import SearchMetadata from '../../components/SearchMetadata';
+import SearchMetadataInput from '../../components/SearchMetadata/SearchMetadataInput';
 
 import useStyles from './styles';
 
@@ -35,7 +35,7 @@ export default function Home() {
       <UploadFile />
       {Object.keys(metadata).length !== 0 && (
         <>
-          <SearchMetadata />
+          <SearchMetadataInput />
           <MetadataTable />
 
           <Button

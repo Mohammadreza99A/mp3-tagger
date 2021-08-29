@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useState } from 'react';
+import React, { ChangeEvent, useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 // Material components
@@ -7,13 +7,13 @@ import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { SearchMetadataContext } from '../../context/SearchMetadataContext';
+import { SearchMetadataContext } from '../../../context/SearchMetadataContext';
 
 import useStyles from './styles';
 
 export default function SearchMetadata() {
   const history = useHistory();
-  const { updateSearchQuery, searchMetadata } = useContext(
+  const { updateSearchQuery, searchMetadata, searchQuery } = useContext(
     SearchMetadataContext
   );
   const [searchInput, setSearchInput] = useState<string>('');
@@ -31,6 +31,10 @@ export default function SearchMetadata() {
     history.push('searchMetadataResults');
   };
 
+  useEffect(() => {
+    setSearchInput(searchQuery);
+  }, [searchQuery]);
+
   return (
     <Paper component="form" className={classes.root}>
       <InputBase
@@ -38,6 +42,7 @@ export default function SearchMetadata() {
         placeholder="Search for metadata"
         inputProps={{ 'aria-label': 'Search for metadata' }}
         onChange={handleSearchInputChange}
+        value={searchInput}
       />
       <IconButton
         type="submit"

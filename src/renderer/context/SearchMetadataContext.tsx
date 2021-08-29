@@ -1,6 +1,14 @@
-import React, { createContext, FC, ReactNode, useState } from 'react';
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  useState,
+  useContext,
+  useEffect,
+} from 'react';
 import { SearchMetadataContextState } from '../types/searchMetadataContextState';
 import Id3Tags from '../types/id3Tags';
+import { MetadataContext } from './MetadataContext';
 
 const defaultSearchMetadataContext: SearchMetadataContextState = {
   searchQuery: '',
@@ -14,6 +22,8 @@ export const SearchMetadataContext = createContext<SearchMetadataContextState>(
 );
 
 const SearchMetadataProvider: FC = ({ children }: ReactNode) => {
+  const { metadata: uploadedMetadata } = useContext(MetadataContext);
+
   const [searchQuery, setSearchQuery] = useState<string>(
     defaultSearchMetadataContext.searchQuery
   );
@@ -63,6 +73,10 @@ const SearchMetadataProvider: FC = ({ children }: ReactNode) => {
       });
     }
   };
+
+  useEffect(() => {
+    setSearchQuery(`${uploadedMetadata.artist} - ${uploadedMetadata.title}`);
+  }, [uploadedMetadata]);
 
   return (
     <SearchMetadataContext.Provider
