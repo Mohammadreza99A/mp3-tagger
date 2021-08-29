@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useContext, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 // Material components
 import Paper from '@material-ui/core/Paper';
@@ -6,12 +7,15 @@ import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { MetadataContext } from '../../context/MetadataContext';
+import { SearchMetadataContext } from '../../context/SearchMetadataContext';
 
 import useStyles from './styles';
 
 export default function SearchMetadata() {
-  const { metadata } = useContext(MetadataContext);
+  const history = useHistory();
+  const { updateSearchQuery, searchMetadata } = useContext(
+    SearchMetadataContext
+  );
   const [searchInput, setSearchInput] = useState<string>('');
 
   const classes = useStyles();
@@ -22,7 +26,9 @@ export default function SearchMetadata() {
 
   const handleSearchButtonClick = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    console.log(searchInput);
+    updateSearchQuery(searchInput);
+    searchMetadata(searchInput);
+    history.push('searchMetadataResults');
   };
 
   return (

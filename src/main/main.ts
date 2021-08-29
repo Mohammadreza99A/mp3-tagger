@@ -12,13 +12,44 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
 import fs from 'fs';
+import * as dotenv from 'dotenv';
+import SpotifyWebApi from 'spotify-web-api-node';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import axios from 'axios';
 import NodeID3 from 'node-id3';
+import { setInterval } from 'timers';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+
+dotenv.config({ path: `${__dirname}/.env` });
+
+const spotifyApi = new SpotifyWebApi({
+  clientId: process.env.SPOTIFY_CLIENT_ID,
+  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+});
+
+const getSpotifyAccessToken = () => {
+  // Retrieve an access token
+  spotifyApi
+    .clientCredentialsGrant()
+    .then((data) =>
+      // Save the access token so that it's used in future calls
+      spotifyApi.setAccessToken(data.body.access_token)
+    )
+    .catch((err) =>
+      console.log(
+        'Something went wrong when retrieving an access token',
+        err.message
+      )
+    );
+};
+
+getSpotifyAccessToken();
+
+setInterval(() => {
+  getSpotifyAccessToken();
+}, 36000);
 
 export default class AppUpdater {
   constructor() {
@@ -55,11 +86,12 @@ ipcMain.handle('uploadMP3CoverPhoto', async (_, filePath: string) => {
 });
 
 ipcMain.handle('searchMetadata', async (_, query: string) => {
-  const optionalMetadata = axios
-    .get(`https://api.deezer.com/search?q=${query}`)
-    .then((res) => res.data)
-    .catch((err) => console.log(err));
-  return optionalMetadata;
+  return spotifyApi.searchTracks(query).then(
+    (data) => {
+      return data.body;
+    },
+    (err) => console.error(err)
+  );
 });
 
 if (process.env.NODE_ENV === 'production') {
