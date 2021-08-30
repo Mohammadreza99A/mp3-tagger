@@ -5,4 +5,5 @@ export type SearchMetadataContextState = {
   foundMetadata: Id3Tags[];
   updateSearchQuery: (updatedQuery: string) => void;
   searchMetadata: (query: string) => void;
+  applyOnlineMetadata: (onlineMetadata: Id3Tags) => void;
 };

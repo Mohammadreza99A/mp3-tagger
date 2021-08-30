@@ -1,8 +1,6 @@
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import axios from 'axios';
-
 // Material components
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -16,7 +14,6 @@ import Typography from '@material-ui/core/Typography';
 import SaveIcon from '@material-ui/icons/Save';
 
 import { SearchMetadataContext } from '../../../context/SearchMetadataContext';
-import { MetadataContext } from '../../../context/MetadataContext';
 
 import Id3Tags from '../../../types/id3Tags';
 
@@ -26,24 +23,12 @@ export default function SearchResultsList() {
   const classes = useStyles();
   const history = useHistory();
 
-  const { foundMetadata } = useContext(SearchMetadataContext);
-  const { updateMetadata } = useContext(MetadataContext);
+  const { foundMetadata, applyOnlineMetadata } = useContext(
+    SearchMetadataContext
+  );
 
   const saveOnlineMetadata = async (metadata: Id3Tags) => {
-    if (metadata.image && typeof metadata.image === 'string') {
-      try {
-        const imageBuff = await axios.get(metadata.image, {
-          responseType: 'arraybuffer',
-        });
-        metadata.image = {
-          imageBuffer: imageBuff.data,
-        };
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    updateMetadata(metadata);
+    applyOnlineMetadata(metadata);
     history.goBack();
   };
 

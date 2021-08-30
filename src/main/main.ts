@@ -13,43 +13,16 @@ import 'regenerator-runtime/runtime';
 import path from 'path';
 import fs from 'fs';
 import * as dotenv from 'dotenv';
-import SpotifyWebApi from 'spotify-web-api-node';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import axios from 'axios';
 import NodeID3 from 'node-id3';
-import { setInterval } from 'timers';
-import MenuBuilder from './menu';
+import Id3Tags from '../renderer/types/id3Tags';
 import { resolveHtmlPath } from './util';
+import MenuBuilder from './menu';
 
 dotenv.config({ path: `${__dirname}/.env` });
-
-const spotifyApi = new SpotifyWebApi({
-  clientId: process.env.SPOTIFY_CLIENT_ID,
-  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-});
-
-const getSpotifyAccessToken = () => {
-  // Retrieve an access token
-  spotifyApi
-    .clientCredentialsGrant()
-    .then((data) =>
-      // Save the access token so that it's used in future calls
-      spotifyApi.setAccessToken(data.body.access_token)
-    )
-    .catch((err) =>
-      console.log(
-        'Something went wrong when retrieving an access token',
-        err.message
-      )
-    );
-};
-
-getSpotifyAccessToken();
-
-setInterval(() => {
-  getSpotifyAccessToken();
-}, 36000);
 
 export default class AppUpdater {
   constructor() {
@@ -85,13 +58,41 @@ ipcMain.handle('uploadMP3CoverPhoto', async (_, filePath: string) => {
   return Buffer.from(coverPhotoFile);
 });
 
-ipcMain.handle('searchMetadata', async (_, query: string) => {
-  return spotifyApi.searchTracks(query).then(
-    (data) => {
-      return data.body;
-    },
-    (err) => console.error(err)
-  );
+ipcMain.handle('searchMetadata', async (_, query: string): Id3Tags[] => {
+  return axios
+    .get(`https://api.deezer.com/search?q="${query}"`)
+    .then((res) => {
+      let foundMetadatas: Id3Tags[] = [];
+
+      res.data.data.forEach((elem) => {
+        const id3Tag: Id3Tags = {};
+
+        if (elem.title) id3Tag.title = elem.title;
+
+        if (elem.artist && elem.artist.name) id3Tag.artist = elem.artist.name;
+
+        if (elem.album) {
+          if (elem.album.title) id3Tag.album = elem.album.title;
+
+          if (elem.album.cover_xl) {
+            id3Tag.image = elem.album.cover_xl;
+          } else if (elem.album.cover_big) {
+            id3Tag.image = elem.album.cover_big;
+          } else if (elem.album.cover_medium) {
+            id3Tag.image = elem.album.cover_medium;
+          } else if (elem.album.cover_small) {
+            id3Tag.image = elem.album.cover_small;
+          } else if (elem.album.cover) {
+            id3Tag.image = elem.album.cover;
+          }
+        }
+
+        foundMetadatas = [...foundMetadatas, id3Tag];
+      });
+
+      return foundMetadatas;
+    })
+    .catch((err) => console.log(err));
 });
 
 if (process.env.NODE_ENV === 'production') {

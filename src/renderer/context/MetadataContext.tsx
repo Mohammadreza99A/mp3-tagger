@@ -24,7 +24,7 @@ const MetadataProvider: FC = ({ children }: ReactNode) => {
   );
 
   const updateMetadata = (updatedMetadata: NodeID3.Tags): void => {
-    setMetadata(updatedMetadata);
+    setMetadata((state) => ({ ...state, ...updatedMetadata }));
   };
 
   const fetchMetadata = async (filepath: string): Promise<void> => {
