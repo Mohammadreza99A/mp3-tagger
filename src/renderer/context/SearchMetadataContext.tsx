@@ -9,6 +9,7 @@ import React, {
 import axios from 'axios';
 
 import { SearchMetadataContextState } from '../types/searchMetadataContextState';
+import OnlineMetadataTag from '../types/onlineMetadataTag';
 import Id3Tags from '../types/id3Tags';
 import { MetadataContext } from './MetadataContext';
 
@@ -31,7 +32,7 @@ const SearchMetadataProvider: FC = ({ children }: ReactNode) => {
   const [searchQuery, setSearchQuery] = useState<string>(
     defaultSearchMetadataContext.searchQuery
   );
-  const [foundMetadata, setFoundMetadata] = useState<Id3Tags[]>(
+  const [foundMetadata, setFoundMetadata] = useState<OnlineMetadataTag[]>(
     defaultSearchMetadataContext.foundMetadata
   );
   const updateSearchQuery = (updatedSearchQuery: string): void => {
@@ -41,33 +42,24 @@ const SearchMetadataProvider: FC = ({ children }: ReactNode) => {
   const searchMetadata = async (query: string): void => {
     setFoundMetadata(defaultSearchMetadataContext.foundMetadata);
 
-    const res: Id3Tags[] = await window.electron.ipcRenderer.searchMetadata(
-      query
-    );
+    const res: OnlineMetadataTag[] =
+      await window.electron.ipcRenderer.searchMetadata(query);
 
     setFoundMetadata(res);
   };
 
-  const applyOnlineMetadata = async (onlineMetadata: Id3Tags) => {
-    if (onlineMetadata.image && typeof onlineMetadata.image === 'string') {
-      try {
-        const imageBuff = await axios.get(onlineMetadata.image, {
-          responseType: 'arraybuffer',
-        });
-        onlineMetadata.image = {
-          imageBuffer: imageBuff.data,
-        };
-      } catch (error) {
-        delete onlineMetadata.image;
-        updateMetadata(onlineMetadata);
-      }
-    }
+  const applyOnlineMetadata = async (onlineMetadata: OnlineMetadataTag) => {
+    const id3Tags: Id3Tags = await window.electron.ipcRenderer.getMetadataById(
+      onlineMetadata
+    );
 
-    updateMetadata(onlineMetadata);
+    updateMetadata(id3Tags);
   };
 
   useEffect(() => {
-    setSearchQuery(`${uploadedMetadata.artist} - ${uploadedMetadata.title}`);
+    if (uploadedMetadata.artist)
+      setSearchQuery(`${uploadedMetadata.artist} - ${uploadedMetadata.title}`);
+    else setSearchQuery(`${uploadedMetadata.title}`);
   }, [uploadedMetadata]);
 
   return (

@@ -12,10 +12,11 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import SaveIcon from '@material-ui/icons/Save';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { SearchMetadataContext } from '../../../context/SearchMetadataContext';
 
-import Id3Tags from '../../../types/id3Tags';
+import OnlineMetadataTag from '../../../types/onlineMetadataTag';
 
 import useStyles from './styles';
 
@@ -27,7 +28,7 @@ export default function SearchResultsList() {
     SearchMetadataContext
   );
 
-  const saveOnlineMetadata = async (metadata: Id3Tags) => {
+  const saveOnlineMetadata = async (metadata: OnlineMetadataTag) => {
     applyOnlineMetadata(metadata);
     history.goBack();
   };
@@ -35,7 +36,7 @@ export default function SearchResultsList() {
   if (Object.keys(foundMetadata).length !== 0) {
     return (
       <List className={classes.root}>
-        {Object.keys(foundMetadata).map((key: Id3Tags) => (
+        {Object.keys(foundMetadata).map((key: OnlineMetadataTag) => (
           <div key={key}>
             {foundMetadata[key].artist && foundMetadata[key].title && (
               <ListItem key={key}>
@@ -83,5 +84,9 @@ export default function SearchResultsList() {
       </List>
     );
   }
-  return <Typography component="h2">Nothing found!</Typography>;
+  return (
+    <div className={classes.spinnerRoot}>
+      <CircularProgress color="secondary" />
+    </div>
+  );
 }

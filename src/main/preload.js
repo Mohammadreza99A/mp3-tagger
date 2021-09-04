@@ -23,5 +23,10 @@ contextBridge.exposeInMainWorld('electron', {
       const res = await ipcRenderer.invoke('searchMetadata', query);
       return res;
     },
+
+    async getMetadataById(onlineMetadata) {
+      const res = await ipcRenderer.invoke('getMetadataById', onlineMetadata);
+      return res;
+    },
   },
 });

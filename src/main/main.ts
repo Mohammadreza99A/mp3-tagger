@@ -18,6 +18,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import axios from 'axios';
 import NodeID3 from 'node-id3';
+import OnlineMetadataTag from '../renderer/types/onlineMetadataTag';
 import Id3Tags from '../renderer/types/id3Tags';
 import { resolveHtmlPath } from './util';
 import MenuBuilder from './menu';
@@ -58,42 +59,111 @@ ipcMain.handle('uploadMP3CoverPhoto', async (_, filePath: string) => {
   return Buffer.from(coverPhotoFile);
 });
 
-ipcMain.handle('searchMetadata', async (_, query: string): Id3Tags[] => {
-  return axios
-    .get(`https://api.deezer.com/search?q="${query}"`)
-    .then((res) => {
-      let foundMetadatas: Id3Tags[] = [];
+ipcMain.handle(
+  'searchMetadata',
+  async (_, query: string): OnlineMetadataTag[] => {
+    return axios
+      .get(`https://api.deezer.com/search?q="${query}"`)
+      .then((res) => {
+        let foundMetadatas: OnlineMetadataTag[] = [];
 
-      res.data.data.forEach((elem) => {
-        const id3Tag: Id3Tags = {};
+        res.data.data.forEach((elem) => {
+          const onlineMetadataTag: OnlineMetadataTag = {};
 
-        if (elem.title) id3Tag.title = elem.title;
+          if (elem.id) onlineMetadataTag.id = elem.id;
 
-        if (elem.artist && elem.artist.name) id3Tag.artist = elem.artist.name;
+          if (elem.title) onlineMetadataTag.title = elem.title;
 
-        if (elem.album) {
-          if (elem.album.title) id3Tag.album = elem.album.title;
+          if (elem.artist && elem.artist.name)
+            onlineMetadataTag.artist = elem.artist.name;
 
-          if (elem.album.cover_xl) {
-            id3Tag.image = elem.album.cover_xl;
-          } else if (elem.album.cover_big) {
-            id3Tag.image = elem.album.cover_big;
-          } else if (elem.album.cover_medium) {
-            id3Tag.image = elem.album.cover_medium;
-          } else if (elem.album.cover_small) {
-            id3Tag.image = elem.album.cover_small;
-          } else if (elem.album.cover) {
-            id3Tag.image = elem.album.cover;
+          if (elem.album) {
+            if (elem.album.title) onlineMetadataTag.album = elem.album.title;
+
+            if (elem.album.cover_xl) {
+              onlineMetadataTag.image = elem.album.cover_xl;
+            } else if (elem.album.cover_big) {
+              onlineMetadataTag.image = elem.album.cover_big;
+            } else if (elem.album.cover_medium) {
+              onlineMetadataTag.image = elem.album.cover_medium;
+            } else if (elem.album.cover_small) {
+              onlineMetadataTag.image = elem.album.cover_small;
+            } else if (elem.album.cover) {
+              onlineMetadataTag.image = elem.album.cover;
+            }
           }
-        }
 
-        foundMetadatas = [...foundMetadatas, id3Tag];
-      });
+          foundMetadatas = [...foundMetadatas, onlineMetadataTag];
+        });
 
-      return foundMetadatas;
-    })
-    .catch((err) => console.log(err));
-});
+        return foundMetadatas;
+      })
+      .catch((err) => console.log(err));
+  }
+);
+
+ipcMain.handle(
+  'getMetadataById',
+  async (_, onlineMetadata: OnlineMetadataTag): Id3Tags => {
+    const id3Tag: Id3Tags = {};
+
+    try {
+      // Get track info
+      const trackRes = await axios.get(
+        `https://api.deezer.com/track/${onlineMetadata.id}`
+      );
+
+      id3Tag.artist = onlineMetadata.artist;
+      id3Tag.title = onlineMetadata.title;
+      id3Tag.album = onlineMetadata.album;
+
+      if (trackRes.data.track_position) {
+        id3Tag.trackNumber = trackRes.data.track_position;
+      }
+
+      // Get album info
+      const albumRes = await axios.get(
+        `https://api.deezer.com/album/${trackRes.data.album.id}`
+      );
+
+      let genres = '';
+      if (
+        albumRes.data.genres &&
+        albumRes.data.genres.data &&
+        albumRes.data.genres.data.length >= 1
+      ) {
+        albumRes.data.genres.data.forEach((aGenre) => {
+          genres += `${aGenre.name}/`;
+        });
+      }
+      id3Tag.genre = genres.substring(0, genres.length - 1);
+
+      if (albumRes.data.nb_tracks) {
+        id3Tag.trackNumber = `${id3Tag.trackNumber}/${albumRes.data.nb_tracks}`;
+      }
+
+      if (albumRes.data.release_date) {
+        id3Tag.year = albumRes.data.release_date;
+      }
+
+      // Get the cover image
+      if (onlineMetadata.image) {
+        const imageBuff = await axios.get(onlineMetadata.image, {
+          responseType: 'arraybuffer',
+        });
+        onlineMetadata.image = {
+          imageBuffer: imageBuff.data,
+        };
+
+        id3Tag.image = onlineMetadata.image;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    return id3Tag;
+  }
+);
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');

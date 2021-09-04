@@ -32,7 +32,7 @@ const MetadataProvider: FC = ({ children }: ReactNode) => {
       await window.electron.ipcRenderer.uploadMP3File(filepath);
 
     setFilePath(filepath);
-    updateMetadata(mp3Metadata);
+    setMetadata(mp3Metadata);
   };
 
   const saveMetadata = async (): Promise<void> => {

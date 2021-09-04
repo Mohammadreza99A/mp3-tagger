@@ -14,5 +14,11 @@ export default makeStyles((theme: Theme) =>
       height: theme.spacing(7),
       marginRight: '10px',
     },
+    spinnerRoot: {
+      display: 'flex',
+      '& > * + *': {
+        marginLeft: theme.spacing(2),
+      },
+    },
   })
 );

@@ -1,9 +1,9 @@
-import Id3Tags from './id3Tags';
+import OnlineMetadataTag from './onlineMetadataTag';
 
 export type SearchMetadataContextState = {
   searchQuery: string;
-  foundMetadata: Id3Tags[];
+  foundMetadata: OnlineMetadataTag[];
   updateSearchQuery: (updatedQuery: string) => void;
   searchMetadata: (query: string) => void;
-  applyOnlineMetadata: (onlineMetadata: Id3Tags) => void;
+  applyOnlineMetadata: (onlineMetadata: OnlineMetadataTag) => void;
 };
