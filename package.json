@@ -4,15 +4,15 @@
   "description": "An Electron app to edit metadata of mp3 files with online search capability",
   "scripts": {
     "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
-    "build:main": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.babel.js",
-    "build:renderer": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.renderer.prod.babel.js",
+    "build:main": "cross-env NODE_ENV=production webpack --config ./.config/configs/webpack.config.main.prod.babel.js",
+    "build:renderer": "cross-env NODE_ENV=production webpack --config ./.config/configs/webpack.config.renderer.prod.babel.js",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir src",
     "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
-    "package": "node -r @babel/register ./.erb/scripts/clean.js dist release && yarn build && electron-builder build --publish never",
-    "postinstall": "node -r @babel/register .erb/scripts/check-native-dep.js && electron-builder install-app-deps && yarn cross-env NODE_ENV=development webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.babel.js && opencollective-postinstall && yarn-deduplicate yarn.lock",
-    "start": "node -r @babel/register ./.erb/scripts/check-port-in-use.js && yarn start:renderer",
-    "start:main": "cross-env NODE_ENV=development electron -r ./.erb/scripts/babel-register ./src/main/main.ts",
-    "start:renderer": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.renderer.dev.babel.js",
+    "package": "node -r @babel/register ./.config/scripts/clean.js dist release && yarn build && electron-builder build --publish never",
+    "postinstall": "node -r @babel/register .config/scripts/check-native-dep.js && electron-builder install-app-deps && yarn cross-env NODE_ENV=development webpack --config ./.config/configs/webpack.config.renderer.dev.dll.babel.js && opencollective-postinstall && yarn-deduplicate yarn.lock",
+    "start": "node -r @babel/register ./.config/scripts/check-port-in-use.js && yarn start:renderer",
+    "start:main": "cross-env NODE_ENV=development electron -r ./.config/scripts/babel-register ./src/main/main.ts",
+    "start:renderer": "cross-env NODE_ENV=development webpack serve --config ./.config/configs/webpack.config.renderer.dev.babel.js",
     "test": "jest"
   },
   "lint-staged": {
@@ -31,15 +31,16 @@
   },
   "build": {
     "productName": "Mp3Tagger",
-    "appId": "mohammadreza99a.Mp3Tagger",
+    "appId": "com.github.Mohammadreza99A.mp3-tagger",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
       "dist",
       "node_modules",
-      "package.json"
+      "package.json",
+      "assets"
     ],
-    "afterSign": ".erb/scripts/notarize.js",
+    "afterSign": ".config/scripts/notarize.js",
     "mac": {
       "type": "distribution",
       "hardenedRuntime": true,
@@ -113,7 +114,7 @@
   "jest": {
     "testURL": "http://localhost/",
     "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.config/mocks/fileMock.js",
       "\\.(css|less|sass|scss)$": "identity-obj-proxy"
     },
     "moduleFileExtensions": [
@@ -128,7 +129,7 @@
       "build/app/node_modules"
     ],
     "setupFiles": [
-      "./.erb/scripts/check-build-exists.js"
+      "./.config/scripts/check-build-exists.js"
     ]
   },
   "devDependencies": {

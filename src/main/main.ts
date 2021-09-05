@@ -210,7 +210,7 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
-    title: 'mp3-tagger',
+    title: 'MP3 Tagger',
     backgroundColor: '#2E3440',
     icon: getAssetPath('icon.png'),
     webPreferences: {
