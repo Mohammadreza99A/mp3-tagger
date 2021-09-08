@@ -4,7 +4,10 @@ import {
   shell,
   BrowserWindow,
   MenuItemConstructorOptions,
+  dialog,
+  clipboard,
 } from 'electron';
+import appConfig from '../../package.json';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -17,6 +20,36 @@ export default class MenuBuilder {
   constructor(mainWindow: BrowserWindow) {
     this.mainWindow = mainWindow;
   }
+
+  aboutMenuClickHandler = async () => {
+    const ok = 'OK';
+    const copy = 'Copy';
+    const buttons = [ok, copy];
+    const detail = [
+      `Version: ${appConfig.version}`,
+      `Developer: ${appConfig.author.name} \n\t\t (${appConfig.author.url})`,
+      `Github page: ${appConfig.homepage}`,
+      `Electron: ${process.versions.electron}`,
+      `Node: ${process.versions.node}`,
+      `V8: ${process.versions.v8}`,
+      `Architecture: ${process.arch}`,
+    ].join('\n');
+
+    const msgBox = await dialog.showMessageBox({
+      type: 'info',
+      title: appConfig.productName,
+      message: appConfig.productName,
+      detail,
+      buttons,
+      defaultId: buttons.indexOf(ok),
+      cancelId: buttons.indexOf(ok),
+      noLink: true,
+    });
+
+    if (msgBox.response === buttons.indexOf(copy)) {
+      clipboard.writeText(detail);
+    }
+  };
 
   buildMenu(): Menu {
     if (
@@ -53,51 +86,10 @@ export default class MenuBuilder {
   }
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
-    const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'Electron',
+    const subMenuFile: DarwinMenuItemConstructorOptions = {
+      label: '&File',
       submenu: [
-        {
-          label: 'About ElectronReact',
-          selector: 'orderFrontStandardAboutPanel:',
-        },
-        { type: 'separator' },
-        { label: 'Services', submenu: [] },
-        { type: 'separator' },
-        {
-          label: 'Hide ElectronReact',
-          accelerator: 'Command+H',
-          selector: 'hide:',
-        },
-        {
-          label: 'Hide Others',
-          accelerator: 'Command+Shift+H',
-          selector: 'hideOtherApplications:',
-        },
-        { label: 'Show All', selector: 'unhideAllApplications:' },
-        { type: 'separator' },
-        {
-          label: 'Quit',
-          accelerator: 'Command+Q',
-          click: () => {
-            app.quit();
-          },
-        },
-      ],
-    };
-    const subMenuEdit: DarwinMenuItemConstructorOptions = {
-      label: 'Edit',
-      submenu: [
-        { label: 'Undo', accelerator: 'Command+Z', selector: 'undo:' },
-        { label: 'Redo', accelerator: 'Shift+Command+Z', selector: 'redo:' },
-        { type: 'separator' },
-        { label: 'Cut', accelerator: 'Command+X', selector: 'cut:' },
-        { label: 'Copy', accelerator: 'Command+C', selector: 'copy:' },
-        { label: 'Paste', accelerator: 'Command+V', selector: 'paste:' },
-        {
-          label: 'Select All',
-          accelerator: 'Command+A',
-          selector: 'selectAll:',
-        },
+        { label: 'Close', accelerator: 'Command+W', selector: 'performClose:' },
       ],
     };
     const subMenuViewDev: MenuItemConstructorOptions = {
@@ -136,26 +128,29 @@ export default class MenuBuilder {
             this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
           },
         },
-        {
-          label: 'Toggle Developer Tools',
-          accelerator: 'Alt+Command+I',
-          click: () => {
-            this.mainWindow.webContents.toggleDevTools();
-          },
-        },
       ],
     };
-    const subMenuWindow: DarwinMenuItemConstructorOptions = {
-      label: 'Window',
+    const subMenuHelp: DarwinMenuItemConstructorOptions = {
+      label: 'Help',
       submenu: [
         {
-          label: 'Minimize',
-          accelerator: 'Command+M',
-          selector: 'performMiniaturize:',
+          label: 'Learn More',
+          click() {
+            shell.openExternal('https://github.com/mohammadreza99a/mp3-tagger');
+          },
         },
-        { label: 'Close', accelerator: 'Command+W', selector: 'performClose:' },
-        { type: 'separator' },
-        { label: 'Bring All to Front', selector: 'arrangeInFront:' },
+        {
+          label: 'Search Issues',
+          click() {
+            shell.openExternal(
+              'https://github.com/mohammadreza99a/mp3-tagger/issues'
+            );
+          },
+        },
+        {
+          label: 'About',
+          click: this.aboutMenuClickHandler,
+        },
       ],
     };
 
@@ -165,7 +160,7 @@ export default class MenuBuilder {
         ? subMenuViewDev
         : subMenuViewProd;
 
-    return [subMenuAbout, subMenuEdit, subMenuView, subMenuWindow];
+    return [subMenuFile, subMenuView, subMenuHelp];
   }
 
   buildDefaultTemplate() {
@@ -222,13 +217,6 @@ export default class MenuBuilder {
                     );
                   },
                 },
-                {
-                  label: 'Toggle &Developer Tools',
-                  accelerator: 'Alt+Ctrl+I',
-                  click: () => {
-                    this.mainWindow.webContents.toggleDevTools();
-                  },
-                },
               ],
       },
       {
@@ -249,6 +237,10 @@ export default class MenuBuilder {
                 'https://github.com/mohammadreza99a/mp3-tagger/issues'
               );
             },
+          },
+          {
+            label: 'About',
+            click: this.aboutMenuClickHandler,
           },
         ],
       },
