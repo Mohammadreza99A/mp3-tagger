@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 
 // Material components
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import Id3Image from '../../../types/id3Image';
@@ -42,31 +43,43 @@ export default function CoverImage({ image }: { image: Id3Image }) {
 
   return (
     <div className={classes.root}>
-      <img
-        srcSet={`data:image/png;base64,${base64Cover}`}
-        alt=""
-        className={classes.coverImage}
-      />
-      <input
-        color="primary"
-        type="file"
-        accept="image/*"
-        onChange={handleCoverPhotoUpload}
-        id="song-cover-upload-button"
-        className={classes.fileInput}
-      />
+      {image && typeof image !== 'string' && (
+        <>
+          <img
+            srcSet={`data:image/png;base64,${base64Cover}`}
+            alt=""
+            className={classes.coverImage}
+          />
+          <input
+            color="primary"
+            type="file"
+            accept="image/*"
+            onChange={handleCoverPhotoUpload}
+            id="song-cover-upload-button"
+            className={classes.fileInput}
+          />
+        </>
+      )}
+      {!image && (
+        <Typography
+          className={classes.noImage}
+          variant="h6"
+          component="h3"
+          align="center"
+        >
+          No cover image. Upload one!
+        </Typography>
+      )}
       {/*  eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label htmlFor="song-cover-upload-button" className={classes.fileLabel}>
         <Button
           variant="outlined"
           component="span"
-          size="large"
-          color="secondary"
           className={classes.button}
           startIcon={<CloudUploadIcon />}
           fullWidth
         >
-          Upload song cover
+          Upload cover
         </Button>
       </label>
     </div>

@@ -1,27 +1,34 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 
-export default makeStyles({
-  root: {
-    display: 'inline-block',
-    maxWidth: '400px',
-    maxHeight: '400px',
-  },
+export default makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: 'inline-block',
+      maxWidth: theme.spacing(50),
+      maxHeight: theme.spacing(50),
+    },
 
-  button: {
-    marginTop: '15px',
-    marginBottom: '15px',
-  },
+    button: {
+      marginTop: '5px',
+    },
 
-  fileInput: {
-    display: 'none',
-  },
+    noImage: {
+      border: '1px solid grey',
+      borderStyle: 'double',
+      padding: '150px 10px',
+    },
 
-  fileLabel: {
-    width: '100%',
-  },
+    fileInput: {
+      display: 'none',
+    },
 
-  coverImage: {
-    maxWidth: '100%',
-    height: 'auto',
-  },
-});
+    fileLabel: {
+      width: '100%',
+    },
+
+    coverImage: {
+      maxWidth: '100%',
+      height: 'auto',
+    },
+  })
+);

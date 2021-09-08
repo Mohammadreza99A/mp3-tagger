@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 
 // Material components
@@ -20,6 +20,23 @@ export default function SearchMetadataResultsPage() {
     history.goBack();
   };
 
+  const handleKeyPress = useCallback(
+    (event) => {
+      if (event.keyCode === 27) {
+        history.goBack();
+      }
+    },
+    [history]
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress, false);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress, false);
+    };
+  }, [handleKeyPress]);
+
   return (
     <Grid
       container
@@ -30,8 +47,6 @@ export default function SearchMetadataResultsPage() {
     >
       <Button
         variant="contained"
-        component="span"
-        size="large"
         color="secondary"
         className={classes.button}
         onClick={onGoBack}
