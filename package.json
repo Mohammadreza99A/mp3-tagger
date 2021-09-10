@@ -1,6 +1,7 @@
 {
   "name": "mp3-tagger",
   "productName": "Mp3Tagger",
+  "version": "0.1.0",
   "description": "An Electron app to edit metadata of mp3 files with online search capability",
   "scripts": {
     "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
@@ -69,6 +70,7 @@
     },
     "linux": {
       "target": [
+        "pacman",
         "AppImage"
       ],
       "category": "Media"
@@ -246,6 +248,7 @@
     "node-id3": "^0.2.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-dropzone": "^11.3.4",
     "react-router-dom": "^5.2.0",
     "regenerator-runtime": "^0.13.5"
   },

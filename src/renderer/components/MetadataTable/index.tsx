@@ -1,12 +1,15 @@
 import React, { useContext } from 'react';
 
 // Mateiral components
+import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import SaveIcon from '@material-ui/icons/Save';
 
 import { MetadataContext } from '../../context/MetadataContext';
 
@@ -17,48 +20,83 @@ import ID3Tags from './ID3Tags';
 import useStyles from './styles';
 
 export default function MetadataTable() {
-  const { metadata } = useContext(MetadataContext);
+  const { metadata, saveMetadata } = useContext(MetadataContext);
 
   const classes = useStyles();
 
+  const onSaveTags = async (): void => {
+    saveMetadata();
+  };
+
   return (
-    <>
-      {Object.keys(metadata).length !== 0 && (
-        <TableContainer component={Paper}>
-          <Table aria-label="metadata table">
-            <TableBody>
-              {/* ID3 tags table rows */}
-              <ID3Tags />
+    <div className={classes.root}>
+      <Grid
+        container
+        spacing={3}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="stretch"
+      >
+        <Grid item xs={12} sm={6}>
+          {Object.keys(metadata).length !== 0 && (
+            <TableContainer component={Paper}>
+              <Table aria-label="metadata table">
+                <TableBody>
+                  {/* ID3 tags table rows */}
+                  <ID3Tags />
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <div className={classes.columnFlex}>
+            <div style={{ width: '100%', flexGrow: 1 }}>
+              <TableContainer component={Paper} style={{ height: '100%' }}>
+                <Table>
+                  <TableBody>
+                    {/* Cover image celle */}
+                    <TableRow>
+                      <TableCell component="th" scope="row">
+                        Cover
+                      </TableCell>
+                      <TableCell align="right">
+                        <CoverImage image={metadata.image} />
+                      </TableCell>
+                    </TableRow>
 
-              {/* Cover image celle */}
-              {metadata.image && typeof metadata.image !== 'string' && (
-                <TableRow>
-                  <TableCell component="th" scope="row">
-                    Cover
-                  </TableCell>
-                  <TableCell align="right">
-                    <CoverImage image={metadata.image} />
-                  </TableCell>
-                </TableRow>
-              )}
+                    {/* User defined text inner table */}
+                    {metadata.userDefinedText && (
+                      <TableRow>
+                        <TableCell component="th" scope="row">
+                          Custom
+                        </TableCell>
+                        <TableCell className={classes.tableCell} align="right">
+                          <UserDefinedTextTable
+                            userDefinedText={metadata.userDefinedText}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
 
-              {/* User defined text inner table */}
-              {metadata.userDefinedText && (
-                <TableRow>
-                  <TableCell component="th" scope="row">
-                    User defined
-                  </TableCell>
-                  <TableCell className={classes.tableCell} align="right">
-                    <UserDefinedTextTable
-                      userDefinedText={metadata.userDefinedText}
-                    />
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </>
+            <Button
+              variant="contained"
+              component="span"
+              color="secondary"
+              className={classes.button}
+              onClick={onSaveTags}
+              startIcon={<SaveIcon />}
+              fullWidth
+            >
+              Save Tags
+            </Button>
+          </div>
+        </Grid>
+      </Grid>
+    </div>
   );
 }
