@@ -30,6 +30,11 @@
       "prettier --ignore-path .eslintignore --single-quote --write"
     ]
   },
+  "publish": {
+    "provider": "github",
+    "owner": "mohammadreza99a",
+    "repo": "mp3-tagger"
+  },
   "build": {
     "productName": "Mp3Tagger",
     "appId": "com.github.Mohammadreza99A.mp3-tagger",
@@ -70,7 +75,6 @@
     },
     "linux": {
       "target": [
-        "pacman",
         "AppImage"
       ],
       "category": "Media"
@@ -82,7 +86,12 @@
     },
     "extraResources": [
       "./assets/**"
-    ]
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "mohammadreza99a",
+      "repo": "mp3-tagger"
+    }
   },
   "repository": {
     "type": "git",
