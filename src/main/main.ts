@@ -35,14 +35,21 @@ export default class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.handle('uploadMP3File', async (_, filename: string) => {
-  const tags = await NodeID3.read(filename);
-  return tags;
-});
+ipcMain.handle(
+  'uploadMP3File',
+  async (event: Electron.IpcMainInvokeEvent, filename: string) => {
+    const tags = await NodeID3.read(filename);
+    return tags;
+  }
+);
 
 ipcMain.handle(
   'updateMP3Tags',
-  async (_, filePath: string, tags: NodeID3.Tags) => {
+  async (
+    event: Electron.IpcMainInvokeEvent,
+    filePath: string,
+    tags: NodeID3.Tags
+  ) => {
     // Convert Uint8Array to Buffer
     if (tags.image && typeof tags.image !== 'string') {
       const buff: Buffer = Buffer.from(tags.image.imageBuffer);
@@ -50,14 +57,25 @@ ipcMain.handle(
     }
 
     await NodeID3.update(tags, filePath);
+    event.sender.send('notification', {
+      type: 'success',
+      message: 'Mp3 file updated successfully.',
+    });
   }
 );
 
-ipcMain.handle('uploadMP3CoverPhoto', async (_, filePath: string) => {
-  // Upload the image and convert it to a buffer
-  const coverPhotoFile: Buffer = fs.readFileSync(filePath);
-  return Buffer.from(coverPhotoFile);
-});
+ipcMain.handle(
+  'uploadMP3CoverPhoto',
+  async (event: Electron.IpcMainInvokeEvent, filePath: string) => {
+    // Upload the image and convert it to a buffer
+    const coverPhotoFile: Buffer = fs.readFileSync(filePath);
+    event.sender.send('notification', {
+      type: 'success',
+      message: 'Cover photo uploaded successfully.',
+    });
+    return Buffer.from(coverPhotoFile);
+  }
+);
 
 ipcMain.handle(
   'searchMetadata',
@@ -104,8 +122,16 @@ ipcMain.handle(
 
 ipcMain.handle(
   'getMetadataById',
-  async (_, onlineMetadata: OnlineMetadataTag): Id3Tags => {
+  async (
+    event: Electron.IpcMainInvokeEvent,
+    onlineMetadata: OnlineMetadataTag
+  ): Id3Tags => {
     const id3Tag: Id3Tags = {};
+
+    event.sender.send('notification', {
+      type: 'info',
+      message: 'Applying the selected metadata. Please wait...',
+    });
 
     try {
       // Get track info
@@ -160,6 +186,11 @@ ipcMain.handle(
     } catch (error) {
       console.log(error);
     }
+
+    event.sender.send('notification', {
+      type: 'success',
+      message: 'Applied the selected metadata.',
+    });
 
     return id3Tag;
   }
