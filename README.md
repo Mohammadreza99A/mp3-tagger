@@ -8,9 +8,9 @@ This application lets you to edit MP3 file tags with the ability to search onlin
 
 **You can download the executable related to your OS by visiting [release page](https://github.com/Mohammadreza99A/mp3-tagger/releases/latest).**
 
-- For Windows, download the installer (`exe` file) [here](https://github.com/Mohammadreza99A/mp3-tagger/releases/download/v0.1.0/Mp3Tagger-Setup-0.1.0.exe).
+<!-- - For Windows, download the installer (`exe` file) [here](https://github.com/Mohammadreza99A/mp3-tagger/releases/download/v0.1.0/Mp3Tagger-Setup-0.1.0.exe).
 - For MacOS, download the installer (`dmg` file) [here](https://github.com/Mohammadreza99A/mp3-tagger/releases/download/v0.1.0/Mp3Tagger-0.1.0.dmg).
-- For Linux, download the AppImage (`AppImage` file) [here](https://github.com/Mohammadreza99A/mp3-tagger/releases/download/v0.1.0/Mp3Tagger-0.1.0.AppImage). After downloading make the AppImage an executable by running `chmod +x Mp3Tagger-0.1.0.AppImage` before executing it. You can execute it by double clicking on the AppImage file.
+- For Linux, download the AppImage (`AppImage` file) [here](https://github.com/Mohammadreza99A/mp3-tagger/releases/download/v0.1.0/Mp3Tagger-0.1.0.AppImage). After downloading make the AppImage an executable by running `chmod +x Mp3Tagger-0.1.0.AppImage` before executing it. You can execute it by double clicking on the AppImage file. -->
 
 ## Install
 
