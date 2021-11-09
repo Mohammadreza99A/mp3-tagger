@@ -16,6 +16,7 @@ import * as dotenv from 'dotenv';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import https from 'https';
 import axios from 'axios';
 import NodeID3 from 'node-id3';
 import OnlineMetadataTag from '../renderer/types/onlineMetadataTag';
@@ -24,6 +25,12 @@ import { resolveHtmlPath } from './util';
 import MenuBuilder from './menu';
 
 dotenv.config({ path: `${__dirname}/.env` });
+
+const httpsAgent: https.Agent = new https.Agent({
+  rejectUnauthorized: false,
+});
+
+axios.defaults.httpsAgent = httpsAgent;
 
 export default class AppUpdater {
   constructor() {
