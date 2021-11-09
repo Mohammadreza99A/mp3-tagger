@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.1 (09/11/2021)
+
+- Fixed bug with user agents in HTTPS requests
+
 ## 0.1.0 (15/09/2021)
 
 **Features**
