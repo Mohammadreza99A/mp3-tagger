@@ -28,5 +28,9 @@ contextBridge.exposeInMainWorld('electron', {
       const res = await ipcRenderer.invoke('getMetadataById', onlineMetadata);
       return res;
     },
+
+    notify(cb) {
+      ipcRenderer.on('notification', (event, customData) => cb(customData));
+    },
   },
 });
