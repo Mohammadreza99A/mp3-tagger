@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.2 (30/01/2022)
+
+- Added notification support
+
 ## 0.1.1 (09/11/2021)
 
 - Fixed bug with user agents in HTTPS requests
