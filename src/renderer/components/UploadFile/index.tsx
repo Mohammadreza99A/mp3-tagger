@@ -15,7 +15,8 @@ export default function UploadFile() {
     (files: T[]) => {
       if (files && files.length >= 1) {
         const chosenFilePath: string = files[0].path;
-        fetchMetadata(chosenFilePath);
+        const chosenFileName: string = files[0].name;
+        fetchMetadata(chosenFilePath, chosenFileName);
       }
     },
     [fetchMetadata]

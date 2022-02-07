@@ -55,6 +55,7 @@ ipcMain.handle(
   async (
     event: Electron.IpcMainInvokeEvent,
     filePath: string,
+    fileName: string,
     tags: NodeID3.Tags
   ) => {
     // Convert Uint8Array to Buffer
@@ -64,10 +65,18 @@ ipcMain.handle(
     }
 
     await NodeID3.update(tags, filePath);
+
+    const oldFileName: string = path.parse(filePath).dir;
+    const newFilePath = `${oldFileName}/${fileName}`;
+
+    fs.renameSync(filePath, newFilePath);
+
     event.sender.send('notification', {
       type: 'success',
       message: 'Mp3 file updated successfully.',
     });
+
+    return newFilePath;
   }
 );
 

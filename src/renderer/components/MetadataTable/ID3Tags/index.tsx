@@ -42,6 +42,7 @@ export default function ID3Tags() {
             </TableCell>
             <TableCell align="right">
               <TextField
+                size="small"
                 id={key}
                 label={key[0].toUpperCase() + key.substring(1).toLowerCase()}
                 variant="outlined"

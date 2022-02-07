@@ -16,6 +16,7 @@ import { MetadataContext } from '../../context/MetadataContext';
 import UserDefinedTextTable from './UserDefinedText';
 import CoverImage from './CoverImage';
 import ID3Tags from './ID3Tags';
+import FileNameInput from './FileNameInput';
 
 import useStyles from './styles';
 
@@ -44,10 +45,35 @@ export default function MetadataTable() {
                 <TableBody>
                   {/* ID3 tags table rows */}
                   <ID3Tags />
+
+                  {/* User defined text inner table */}
+                  {metadata.userDefinedText && (
+                    <TableRow>
+                      <TableCell component="th" scope="row">
+                        Custom
+                      </TableCell>
+                      <TableCell className={classes.tableCell} align="right">
+                        <UserDefinedTextTable
+                          userDefinedText={metadata.userDefinedText}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
           )}
+          <Button
+            variant="contained"
+            component="span"
+            color="secondary"
+            className={classes.button}
+            onClick={onSaveTags}
+            startIcon={<SaveIcon />}
+            fullWidth
+          >
+            Save Tags
+          </Button>
         </Grid>
         <Grid item xs={12} sm={6}>
           <div className={classes.columnFlex}>
@@ -55,7 +81,17 @@ export default function MetadataTable() {
               <TableContainer component={Paper} style={{ height: '100%' }}>
                 <Table>
                   <TableBody>
-                    {/* Cover image celle */}
+                    {/* File name cell */}
+                    <TableRow>
+                      <TableCell component="th" scope="row">
+                        File
+                      </TableCell>
+                      <TableCell align="right">
+                        <FileNameInput />
+                      </TableCell>
+                    </TableRow>
+
+                    {/* Cover image cell */}
                     <TableRow>
                       <TableCell component="th" scope="row">
                         Cover
@@ -64,36 +100,10 @@ export default function MetadataTable() {
                         <CoverImage image={metadata.image} />
                       </TableCell>
                     </TableRow>
-
-                    {/* User defined text inner table */}
-                    {metadata.userDefinedText && (
-                      <TableRow>
-                        <TableCell component="th" scope="row">
-                          Custom
-                        </TableCell>
-                        <TableCell className={classes.tableCell} align="right">
-                          <UserDefinedTextTable
-                            userDefinedText={metadata.userDefinedText}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
             </div>
-
-            <Button
-              variant="contained"
-              component="span"
-              color="secondary"
-              className={classes.button}
-              onClick={onSaveTags}
-              startIcon={<SaveIcon />}
-              fullWidth
-            >
-              Save Tags
-            </Button>
           </div>
         </Grid>
       </Grid>
