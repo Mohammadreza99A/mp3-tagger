@@ -1,6 +1,14 @@
 # CHANGELOG
 
+## 0.1.3 (12/02/2022)
+
+**Features**
+
+- Added file renaming
+
 ## 0.1.2 (30/01/2022)
+
+**Features**
 
 - Added notification support
 
