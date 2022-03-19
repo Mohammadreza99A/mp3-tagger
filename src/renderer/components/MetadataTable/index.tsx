@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 
-// Mateiral components
+// Material components
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,6 +16,7 @@ import { MetadataContext } from '../../context/MetadataContext';
 import UserDefinedTextTable from './UserDefinedText';
 import CoverImage from './CoverImage';
 import ID3Tags from './ID3Tags';
+import Lyrics from './Lyrics';
 import FileNameInput from './FileNameInput';
 
 import useStyles from './styles';
@@ -98,6 +99,14 @@ export default function MetadataTable() {
                       </TableCell>
                       <TableCell align="right">
                         <CoverImage image={metadata.image} />
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell component="th" scope="row">
+                        Lyrics
+                      </TableCell>
+                      <TableCell align="right">
+                        <Lyrics />
                       </TableCell>
                     </TableRow>
                   </TableBody>
