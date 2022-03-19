@@ -7,12 +7,13 @@ contextBridge.exposeInMainWorld('electron', {
       return tags;
     },
 
-    async updateMP3Tags(filepath, filename, tags) {
+    async updateMP3Tags(filepath, filename, tags, lyrics) {
       const newFilePath = await ipcRenderer.invoke(
         'updateMP3Tags',
         filepath,
         filename,
-        tags
+        tags,
+        lyrics
       );
       return newFilePath;
     },

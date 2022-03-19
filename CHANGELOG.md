@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.1.4 (20/03/2022)
+
+**Features**
+
+- Added Add/Edit lyrics
+
 ## 0.1.3 (12/02/2022)
 
 **Features**

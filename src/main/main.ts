@@ -56,13 +56,20 @@ ipcMain.handle(
     event: Electron.IpcMainInvokeEvent,
     filePath: string,
     fileName: string,
-    tags: NodeID3.Tags
+    tags: NodeID3.Tags,
+    lyrics: string
   ) => {
     // Convert Uint8Array to Buffer
     if (tags.image && typeof tags.image !== 'string') {
       const buff: Buffer = Buffer.from(tags.image.imageBuffer);
       tags.image.imageBuffer = buff;
     }
+
+    tags.unsynchronisedLyrics = {
+      language: '   ',
+      shortText: undefined,
+      text: lyrics,
+    };
 
     await NodeID3.update(tags, filePath);
 

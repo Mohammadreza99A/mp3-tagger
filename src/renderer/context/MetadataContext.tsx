@@ -6,6 +6,8 @@ const defaultMetadataContext: MetadataContextState = {
   filePath: '',
   fileName: '',
   metadata: {},
+  lyrics: '',
+  updateLyrics: () => {},
   updateMetadata: () => {},
   fetchMetadata: () => {},
   saveMetadata: () => {},
@@ -26,6 +28,7 @@ const MetadataProvider: FC = ({ children }: ReactNode) => {
   const [metadata, setMetadata] = useState<NodeID3.Tags>(
     defaultMetadataContext.metadata
   );
+  const [lyrics, setLyrics] = useState<string>(defaultMetadataContext.lyrics);
 
   const updateMetadata = (updatedMetadata: NodeID3.Tags): void => {
     setMetadata((state) => ({ ...state, ...updatedMetadata }));
@@ -42,6 +45,15 @@ const MetadataProvider: FC = ({ children }: ReactNode) => {
     setFilePath(filepath);
 
     setMetadata(mp3Metadata);
+    if (
+      mp3Metadata.unsynchronisedLyrics &&
+      mp3Metadata.unsynchronisedLyrics.text
+    )
+      setLyrics(mp3Metadata.unsynchronisedLyrics.text);
+  };
+
+  const updateLyrics = (newLyrics: string): void => {
+    setLyrics(newLyrics);
   };
 
   const saveMetadata = async (): Promise<void> => {
@@ -49,7 +61,8 @@ const MetadataProvider: FC = ({ children }: ReactNode) => {
       const newFilePath = await window.electron.ipcRenderer.updateMP3Tags(
         filePath,
         fileName,
-        metadata
+        metadata,
+        lyrics
       );
 
       fetchMetadata(newFilePath, fileName);
@@ -81,6 +94,8 @@ const MetadataProvider: FC = ({ children }: ReactNode) => {
         filePath,
         fileName,
         metadata,
+        lyrics,
+        updateLyrics,
         fetchMetadata,
         updateMetadata,
         updateFileName,
